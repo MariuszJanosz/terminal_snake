@@ -3,7 +3,7 @@ CFLAGS=-Wall -Werror -O0
 INCLUDES=.
 LIBDIR=.
 LIBRARIES=
-SOURCES=main.c
+SOURCES=$(wildcard *.c)
 DEPENDENCIES=$(SOURCES:.c=.d)
 OBJECTS=$(SOURCES:.c=.o)
 BIN=a.out
