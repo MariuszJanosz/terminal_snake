@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "board.h"
+#include "print_utils.h"
 
 void init_board(Board_t *board, uint16_t rows, uint16_t cols) {
 	board->rows = rows;
@@ -26,46 +28,45 @@ void init_board(Board_t *board, uint16_t rows, uint16_t cols) {
 	}
 }
 
+char cell_state_to_char(Cell_state_t state) {
+	switch (state) {
+		case EMPTY:
+			return ' ';
+		case WALL:
+			return 'a';
+		case FOOD:
+			return '`';
+		case SNAKE_SEGMENT:
+			return '#';
+		case SNAKE_HEAD_UP:
+			return 'v';
+		case SNAKE_HEAD_RIGHT:
+			return '>';
+		case SNAKE_HEAD_DOWN:
+			return 'w';
+		case SNAKE_HEAD_LEFT:
+			return '<';
+		default:
+			assert(false);
+			return '\0';
+	}
+}
+
 void draw_board(Board_t *board) {
-	printf("\x1b[2J"); //Clear screen
-	printf("\x1b[3J"); //Delete scroll-back buffer
-	printf("\x1b[38;5;135m"); //Set color to light purple
-	printf("\x1b(0"); //Enter table drawing mode
+	clear_screen();
+	set_table_drawing_on();
+	set_color(173, 68, 7);
 	for (int i = 0; i < board->rows; ++i) {
 		for (int j = 0; j < board->cols; ++j) {
-			//Move cursor to (i + 1)-st row (j + 1)-st col
-			printf("\x1b[%d;%dH", i + 1, j + 1);
-			switch (board->board[board->cols * i + j]) {
-				case WALL: //Print block
-					printf("a");
-					break;
-				case EMPTY:
-					printf(" ");
-					break;
-				case FOOD: //Print diamond
-					printf("`");
-					break;
-				case SNAKE_SEGMENT:
-					printf("#");
-					break;
-				case SNAKE_HEAD_UP: //Print arrow up
-					printf("v");
-					break;
-				case SNAKE_HEAD_RIGHT:
-					printf(">");
-					break;
-				case SNAKE_HEAD_DOWN: //Print arrow down
-					printf("w");
-					break;
-				case SNAKE_HEAD_LEFT:
-					printf("<");
-					break;
-				default:
-			}
+			set_cursor_position(i + 1, j + 1);	
+			printf("%c",
+				cell_state_to_char(
+				board->board[board->cols * i + j]));
+			
 		}
 	}
-	printf("\x1b(B"); //Return from table drawing mode
-	printf("\x1b[0m"); //Set color to normal
+	set_table_drawing_off();
+	set_color(255, 255, 255);
 }
 
 void free_board(Board_t *board) {
