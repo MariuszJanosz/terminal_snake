@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -O0
+CFLAGS=-Wall -Werror -O0 -g
 INCLUDES=.
 LIBDIR=.
 LIBRARIES=
@@ -8,7 +8,11 @@ DEPENDENCIES=$(SOURCES:.c=.d)
 OBJECTS=$(SOURCES:.c=.o)
 BIN=a.out
 
-all: $(OBJECTS)
+.PHONY: all
+
+all: $(BIN)
+
+$(BIN): $(OBJECTS)
 	@echo "Building $(BIN)"
 	@$(CC) \
 		$(CFLAGS) \
@@ -30,6 +34,8 @@ all: $(OBJECTS)
 		-o $@
 
 -include $(DEPENDENCIES)
+
+.PHONY: clean
 
 clean:
 	@echo "Removing build results"
