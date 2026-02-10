@@ -11,9 +11,9 @@ void init_board(Board_t *board, uint16_t rows, uint16_t cols) {
 	board->rows = rows;
 	board->cols = cols;
 	board->board = (uint8_t*)malloc(rows * cols * sizeof(uint8_t));
+	assert(board->board && "Board allocation failed!");
 	if (!board->board)
 		exit(1);
-	assert(board->board && "Board allocation failed!");
 
 	for (int i = 0; i < rows; ++i) {
 		for (int j = 0; j < cols; ++j) {
