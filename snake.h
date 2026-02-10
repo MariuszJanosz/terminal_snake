@@ -15,8 +15,8 @@ typedef enum Direction_t {
 
 typedef struct Snake_segment_t {
 	struct Snake_segment_t *next;
-	uint16_t x;
-	uint16_t y;
+	uint16_t row;
+	uint16_t col;
 } Snake_segment_t;
 
 typedef struct Snake_t {
