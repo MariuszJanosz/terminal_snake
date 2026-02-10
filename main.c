@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <time.h>
+#include <threads.h>
 
 #include "board.h"
 #include "snake.h"
+
+const struct timespec difficulty = {0, 350000000};
+struct timespec rem = {0, 0};
 
 int main(int argc, char **argv) {
 	Board_t board;
@@ -11,11 +16,13 @@ int main(int argc, char **argv) {
 	init_board(&board, 20, 50);	
 	init_snake(&snake, &board);
 	draw_board(&board);
-	getchar();
+	fflush(stdout);
+	thrd_sleep(&difficulty, &rem);
 	bool game_over = false;
 	while (!game_over) {
 		move_snake(&snake, &board, &game_over);
-		getchar();
+		fflush(stdout);
+		thrd_sleep(&difficulty, &rem);
 	}
 	free_board(&board);
 	free_snake(&snake);
