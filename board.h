@@ -24,5 +24,6 @@ void init_board(Board_t *board, uint16_t rows, uint16_t cols);
 void draw_board(Board_t *board);
 void free_board(Board_t *board);
 char cell_state_to_char(Cell_state_t state);
+void cell_state_to_rgb(Cell_state_t state, uint8_t *r, uint8_t *g, uint8_t *b);
 
 #endif //BOARD_H

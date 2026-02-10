@@ -52,6 +52,34 @@ char cell_state_to_char(Cell_state_t state) {
 	}
 }
 
+void cell_state_to_rgb(Cell_state_t state, uint8_t *r, uint8_t *g, uint8_t *b) {
+	switch (state) {
+		case WALL:
+			*r = 173;
+			*g = 68;
+			*b = 7;
+			break;
+		case FOOD:
+			*r = 240;
+			*g = 20;
+			*b = 15;
+			break;
+		case SNAKE_SEGMENT:
+		case SNAKE_HEAD_UP:
+		case SNAKE_HEAD_RIGHT:
+		case SNAKE_HEAD_DOWN:
+		case SNAKE_HEAD_LEFT:
+			*r = 0;
+			*g = 222;
+			*b = 33;
+			break;
+		case EMPTY:
+		default:
+			*r = *g = *b = 0;
+			break;
+	}
+}
+
 void draw_board(Board_t *board) {
 	clear_screen();
 	set_table_drawing_on();
