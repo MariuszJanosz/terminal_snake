@@ -45,3 +45,7 @@ void set_bold_on() {
 void set_bold_off() {
 	printf("\x1b[22m");
 }
+
+void print_char(char c, uint16_t row, uint16_t col, uint8_t r, uint8_t g, uint8_t b) {
+	printf("\x1b[%d;%dH\x1b[38;2;%d;%d;%dm%c", row, col, r, g, b, c);
+}
