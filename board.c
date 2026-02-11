@@ -38,7 +38,7 @@ char cell_state_to_char(Cell_state_t state) {
 		case FOOD:
 			return '`';
 		case SNAKE_SEGMENT:
-			return '#';
+			return 'a';
 		case SNAKE_HEAD_UP:
 			return 'v';
 		case SNAKE_HEAD_RIGHT:
