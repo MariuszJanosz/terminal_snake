@@ -13,6 +13,8 @@ const struct timespec difficulty = {0, 350000000};
 struct timespec rem = {0, 0};
 
 int main(int argc, char **argv) {
+	set_cursor_visibility_off();
+	atexit(set_cursor_visibility_on);
 	srand(time(NULL));
 	Board_t board;
 	Snake_t snake;
