@@ -22,9 +22,11 @@ void init_snake(Snake_t *snake, Board_t *board) {
 	board->board[board->cols * snake->tail->row + snake->tail->col] = SNAKE_HEAD_RIGHT;
 }
 
-void move_snake(Snake_t *snake, Board_t *board, bool *game_over) {
+void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, bool *game_over) {
 	assert(snake->tail);
 	
+	snake->direction = new_direction;
+
 	set_table_drawing_on();
 	set_color(10, 233, 20);
 

@@ -7,6 +7,7 @@
 #include "board.h"
 #include "snake.h"
 #include "print_utils.h"
+#include "control.h"
 
 const struct timespec difficulty = {0, 350000000};
 struct timespec rem = {0, 0};
@@ -19,10 +20,13 @@ int main(int argc, char **argv) {
 	init_snake(&snake, &board);
 	draw_board(&board);
 	fflush(stdout);
+	thrd_t thr;
+	thrd_create(&thr, control, &snake);
+	thrd_detach(thr);
 	thrd_sleep(&difficulty, &rem);
 	bool game_over = false;
 	while (!game_over) {
-		move_snake(&snake, &board, &game_over);
+		move_snake(&snake, new_direction, &board, &game_over);
 		fflush(stdout);
 		thrd_sleep(&difficulty, &rem);
 	}
