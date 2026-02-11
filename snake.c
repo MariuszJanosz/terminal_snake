@@ -15,7 +15,7 @@ void init_snake(Snake_t *snake, Board_t *board) {
 	if (!snake->tail)
 		exit(1);
 
-	assert(board->rows > 2 && board->cols > 2 && "Board is to small!");
+	assert(board->rows > 2 && board->cols > 5 && "Board is to small!");
 	snake->tail->row = board->rows / 2;
 	snake->tail->col = board->cols / 2;
 	snake->tail->next = NULL;
@@ -88,6 +88,24 @@ void move_snake(Snake_t *snake, Board_t *board, bool *game_over) {
 	       		break;
 		case FOOD:
 			snake->growing = true;
+			{
+				uint16_t frow, fcol;
+				while (true) {
+					frow = rand() % board->rows;
+					fcol = rand() % board->cols;
+					if (board->board[board->cols * frow 
+							+ fcol] == EMPTY) {
+						board->board[board->cols * frow
+							+ fcol] = FOOD;
+						uint8_t r, g, b;
+						cell_state_to_rgb(FOOD, &r, &g, &b);
+						print_char(cell_state_to_char(FOOD),
+								frow + 1, fcol + 1,
+								r, g, b);
+						break;
+					}
+				}
+			}
 			break;
 		case EMPTY:
 			break;
@@ -107,9 +125,11 @@ void move_snake(Snake_t *snake, Board_t *board, bool *game_over) {
 			board->board[board->cols * it->row + it->col] = SNAKE_HEAD_LEFT;
 			break;
 	}
-	set_cursor_position(it->row + 1, it->col + 1);
-	printf("%c", cell_state_to_char(
-				board->board[board->cols * it->row + it->col]));
+	uint8_t r, g, b;
+	cell_state_to_rgb(board->board[board->cols * it->row + it->col], &r, &g, &b);
+	print_char(cell_state_to_char(board->board[board->cols * it->row + it->col]),
+			it->row + 1, it->col + 1,
+			r, g, b);
 
 	set_table_drawing_off();
 	set_color(255, 255, 255);

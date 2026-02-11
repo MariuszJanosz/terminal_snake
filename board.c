@@ -26,6 +26,7 @@ void init_board(Board_t *board, uint16_t rows, uint16_t cols) {
 				EMPTY;
 		}
 	}
+	board->board[cols * rows / 2 + cols / 2 + 3] = FOOD;
 }
 
 char cell_state_to_char(Cell_state_t state) {
