@@ -33,9 +33,13 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 
 	if (!snake->growing) {
 		board->board[board->cols * snake->tail->row + snake->tail->col] = EMPTY;
-		set_cursor_position(snake->tail->row + 1, snake->tail->col + 1);
-		printf("%c", cell_state_to_char(
-			board->board[board->cols * snake->tail->row + snake->tail->col]));
+		char c = cell_state_to_char(EMPTY);
+		uint16_t row = snake->tail->row + 1;
+		uint16_t col = 2 * snake->tail->col + 1;
+		uint8_t r, g, b;
+		cell_state_to_rgb(EMPTY, &r, &g, &b);
+		print_char(c, row, col, r, g, b);
+		print_char(c, row, col + 1, r, g, b);
 	}
 	else {
 		snake->growing = false;
@@ -51,9 +55,13 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 	Snake_segment_t *it = snake->tail;
 	if (it->next && it->row == it->next->row && it->col == it->next->col) {
 		board->board[board->cols * it->row + it->col] = SNAKE_SEGMENT;
-		set_cursor_position(it->row + 1, it->col + 1);
-		printf("%c", cell_state_to_char(
-				board->board[board->cols * it->row + it->col]));
+		char c = cell_state_to_char(SNAKE_SEGMENT);
+		uint16_t row = it->row + 1;
+		uint16_t col = 2 * it->col + 1;
+		uint8_t r, g, b;
+		cell_state_to_rgb(SNAKE_SEGMENT, &r, &g, &b);
+		print_char(c, row, col, r, g, b);
+		print_char(c, row, col + 1, r, g, b);
 		it = it->next;
 	}
 	while (it->next) {
@@ -64,9 +72,13 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 
 	if (it != snake->tail) {
 		board->board[board->cols * it->row + it->col] = SNAKE_SEGMENT;
-		set_cursor_position(it->row + 1, it->col + 1);
-		printf("%c", cell_state_to_char(
-				board->board[board->cols * it->row + it->col]));
+		char c = cell_state_to_char(SNAKE_SEGMENT);
+		uint16_t row = it->row + 1;
+		uint16_t col = 2 * it->col + 1;
+		uint8_t r, g, b;
+		cell_state_to_rgb(SNAKE_SEGMENT, &r, &g, &b);
+		print_char(c, row, col, r, g, b);
+		print_char(c, row, col + 1, r, g, b);
 	}
 
 	switch (snake->direction) {
@@ -103,8 +115,12 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 						uint8_t r, g, b;
 						cell_state_to_rgb(FOOD, &r, &g, &b);
 						print_char(cell_state_to_char(FOOD),
-								frow + 1, fcol + 1,
+								frow + 1, 2 * fcol + 1,
 								r, g, b);
+						print_char(cell_state_to_char(FOOD),
+								frow + 1, 2 * fcol + 2,
+								r, g, b);
+
 						break;
 					}
 				}
@@ -128,11 +144,14 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 			board->board[board->cols * it->row + it->col] = SNAKE_HEAD_LEFT;
 			break;
 	}
+	Cell_state_t state = board->board[board->cols * it->row + it->col];
+	char c = cell_state_to_char(state);
+	uint16_t row = it->row + 1;
+	uint16_t col = 2 * it->col + 1;
 	uint8_t r, g, b;
-	cell_state_to_rgb(board->board[board->cols * it->row + it->col], &r, &g, &b);
-	print_char(cell_state_to_char(board->board[board->cols * it->row + it->col]),
-			it->row + 1, it->col + 1,
-			r, g, b);
+	cell_state_to_rgb(state, &r, &g, &b);
+	print_char(c, row, col, r, g, b);
+	print_char(c, row, col + 1, r, g, b);
 
 	set_table_drawing_off();
 	set_color(255, 255, 255);

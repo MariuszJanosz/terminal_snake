@@ -89,10 +89,12 @@ void draw_board(Board_t *board) {
 			Cell_state_t state = board->board[board->cols * i + j];
 			char c = cell_state_to_char(state);
 			uint16_t row = i + 1;
-			uint16_t col = j + 1;
+			uint16_t col = 2 * j + 1;
 			uint8_t r, g, b;
 			cell_state_to_rgb(state, &r, &g, &b);
 			print_char(c, row, col, r, g, b);
+			print_char(c, row, col + 1, r, g, b);
+
 		}
 	}
 	set_table_drawing_off();
