@@ -2,12 +2,15 @@
 #define CONTROL_H
 
 #include <stdatomic.h>
+#include <threads.h>
 
 #include "snake.h"
 
 typedef struct Control_context_t {
 	Snake_t *snake;
 	atomic_bool *game_over;
+	mtx_t *mtx;
+	cnd_t *cnd;
 } Control_context_t;
 
 extern Direction_t new_direction;

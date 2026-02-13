@@ -11,8 +11,7 @@
 #include "control.h"
 #include "terminal.h"
 
-const struct timespec difficulty = {0, 350000000};
-struct timespec rem = {0, 0};
+#define difficulty 200000000
 
 int main(int argc, char **argv) {
 	save_terminal_settings();
@@ -30,18 +29,41 @@ int main(int argc, char **argv) {
 	draw_board(&board);
 	fflush(stdout);
 	atomic_bool game_over = false;
+	mtx_t mtx;
+	mtx_init(&mtx, mtx_plain);
+	mtx_lock(&mtx);
+	cnd_t cnd;
+	cnd_init(&cnd);
 	thrd_t thr;
 	Control_context_t control_context;
 	control_context.snake = &snake;
 	control_context.game_over = &game_over;
+	control_context.mtx = &mtx;
+	control_context.cnd = &cnd;
+	struct timespec wake_time;
+	timespec_get(&wake_time, TIME_UTC);
+	wake_time.tv_nsec += difficulty;
+	if (wake_time.tv_nsec >= 1000000000) {
+		wake_time.tv_nsec -= 1000000000;
+		wake_time.tv_sec += 1;
+	}
+	cnd_timedwait(&cnd, &mtx, &wake_time);
 	thrd_create(&thr, control, &control_context);
-	thrd_sleep(&difficulty, &rem);
 	while (!atomic_load(&game_over)) {
 		move_snake(&snake, new_direction, &board, &game_over);
 		fflush(stdout);
-		thrd_sleep(&difficulty, &rem);
+		timespec_get(&wake_time, TIME_UTC);
+		wake_time.tv_nsec += difficulty;
+		if (wake_time.tv_nsec >= 1000000000) {
+			wake_time.tv_nsec -= 1000000000;
+			wake_time.tv_sec += 1;
+		}
+		cnd_timedwait(&cnd, &mtx, &wake_time);
 	}
 	thrd_join(thr, NULL);
+	mtx_unlock(&mtx);
+	mtx_destroy(&mtx);
+	cnd_destroy(&cnd);
 	free_board(&board);
 	free_snake(&snake);
 	return 0;
