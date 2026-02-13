@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdatomic.h>
 
 #include "snake.h"
 #include "board.h"
@@ -22,7 +23,7 @@ void init_snake(Snake_t *snake, Board_t *board) {
 	board->board[board->cols * snake->tail->row + snake->tail->col] = SNAKE_HEAD_RIGHT;
 }
 
-void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, bool *game_over) {
+void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomic_bool *game_over) {
 	assert(snake->tail);
 	
 	snake->direction = new_direction;
@@ -86,7 +87,7 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, bool 
 	switch (board->board[board->cols * it->row + it->col]) {
 		case WALL:
 		case SNAKE_SEGMENT:
-			*game_over = true;
+			atomic_store(game_over, true);
 	       		break;
 		case FOOD:
 			snake->growing = true;

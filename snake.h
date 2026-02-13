@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdatomic.h>
 
 #include "board.h"
 
@@ -26,7 +27,7 @@ typedef struct Snake_t {
 } Snake_t;
 
 void init_snake(Snake_t *snake, Board_t *board);
-void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, bool *game_over);
+void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomic_bool *game_over);
 void free_snake(Snake_t *snake);
 
 #endif //SNAKE_H

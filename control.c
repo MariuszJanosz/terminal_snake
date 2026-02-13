@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdatomic.h>
 
 #include "control.h"
 #include "snake.h"
@@ -6,7 +7,9 @@
 Direction_t new_direction = RIGHT;
 
 int control(void *context) {
-	Snake_t *snake = (Snake_t*)context;
+	Control_context_t control_context = *(Control_context_t*)context;
+	Snake_t *snake = control_context.snake;
+	atomic_bool *game_over = control_context.game_over;
 	setvbuf(stdin, NULL, _IONBF, 0);
 	int c;
 	while(true) {
@@ -32,6 +35,9 @@ int control(void *context) {
 				if (snake->direction == RIGHT) break;
 				new_direction = LEFT;
 				break;
+			case EOF:
+				if (!atomic_load(game_over)) break;
+				return 0;
 			default:
 				break;
 		}
