@@ -21,6 +21,7 @@ typedef struct Board_t {
 } Board_t;
 
 void init_board(Board_t *board, uint16_t rows, uint16_t cols);
+void print_cell(Board_t *board, uint16_t row, uint16_t col);
 void draw_board(Board_t *board);
 void free_board(Board_t *board);
 char cell_state_to_char(Cell_state_t state);

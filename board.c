@@ -85,6 +85,17 @@ void cell_state_to_rgb(Cell_state_t state, uint8_t *r, uint8_t *g, uint8_t *b) {
 	}
 }
 
+void print_cell(Board_t *board, uint16_t row, uint16_t col) {
+	Cell_state_t state = board->board[board->cols * row + col];
+	char c = cell_state_to_char(state);
+	uint16_t screen_row = row + 1;
+	uint16_t screen_col = 2 * col + 1;
+	uint8_t r, g, b;
+	cell_state_to_rgb(state, &r, &g, &b);
+	print_char(c, screen_row, screen_col, r, g, b);
+	print_char(c, screen_row, screen_col + 1, r, g, b);
+}
+
 void draw_board(Board_t *board) {
 	assert(board && "draw_board failed, Board_t* in NULL!");
 	if (!board)
@@ -93,15 +104,7 @@ void draw_board(Board_t *board) {
 	set_table_drawing_on();
 	for (int i = 0; i < board->rows; ++i) {
 		for (int j = 0; j < board->cols; ++j) {
-			Cell_state_t state = board->board[board->cols * i + j];
-			char c = cell_state_to_char(state);
-			uint16_t row = i + 1;
-			uint16_t col = 2 * j + 1;
-			uint8_t r, g, b;
-			cell_state_to_rgb(state, &r, &g, &b);
-			print_char(c, row, col, r, g, b);
-			print_char(c, row, col + 1, r, g, b);
-
+			print_cell(board, i, j);
 		}
 	}
 	set_table_drawing_off();
