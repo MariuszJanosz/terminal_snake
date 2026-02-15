@@ -8,15 +8,28 @@
 #include "snake.h"
 #include "board.h"
 #include "print_utils.h"
+#include "terminal.h"
 
 void init_snake(Snake_t *snake, Board_t *board) {
+	assert(snake && "Snake_t* is NULL!");
+	assert(board && "Board_t* is NULL!");
+	if (!snake || !board)
+		exit(1);
 	snake->direction = RIGHT;
 	snake->growing = false;
 	snake->tail = (Snake_segment_t*)malloc(sizeof(*snake->tail));
+	assert(snake->tail && "Snake_segment_t* allocation failed!");
 	if (!snake->tail)
 		exit(1);
 
 	assert(board->rows > 2 && board->cols > 5 && "Board is to small!");
+	if (board->rows <= 2 || board->cols <= 5)
+		exit(1);
+	uint16_t rows, cols;
+	get_terminal_size(&rows, &cols);
+	assert(board->rows <= rows && 2 * board->cols <= cols && "Board is to big!");
+	if (board->rows > rows || 2 * board->cols > cols)
+		exit(1);
 	snake->tail->row = board->rows / 2;
 	snake->tail->col = board->cols / 2;
 	snake->tail->next = NULL;

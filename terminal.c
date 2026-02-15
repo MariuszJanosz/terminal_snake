@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <stdint.h>
 
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 
 #include "terminal.h"
 
@@ -41,4 +43,11 @@ void non_blocking_input() {
 void remove_non_blocking_input() {
 	int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
 	fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
+}
+
+void get_terminal_size(uint16_t *rows, uint16_t *cols) {
+	struct winsize tmp;
+	ioctl(0, TIOCGWINSZ, &tmp);
+	*rows = tmp.ws_row;
+	*cols = tmp.ws_col;
 }
