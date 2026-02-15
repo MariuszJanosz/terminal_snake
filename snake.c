@@ -11,23 +11,23 @@
 #include "terminal.h"
 
 void init_snake(Snake_t *snake, Board_t *board) {
-	assert(snake && "Snake_t* is NULL!");
-	assert(board && "Board_t* is NULL!");
+	assert(snake && "init_snake failed, Snake_t* is NULL!");
+	assert(board && "init_snake failed, Board_t* is NULL!");
 	if (!snake || !board)
 		exit(1);
 	snake->direction = RIGHT;
 	snake->growing = false;
 	snake->tail = (Snake_segment_t*)malloc(sizeof(*snake->tail));
-	assert(snake->tail && "Snake_segment_t* allocation failed!");
+	assert(snake->tail && "init_snake failed, Snake_segment_t* allocation failed!");
 	if (!snake->tail)
 		exit(1);
 
-	assert(board->rows > 2 && board->cols > 5 && "Board is to small!");
+	assert(board->rows > 2 && board->cols > 5 && "init_snake failed, board is to small!");
 	if (board->rows <= 2 || board->cols <= 5)
 		exit(1);
 	uint16_t rows, cols;
 	get_terminal_size(&rows, &cols);
-	assert(board->rows <= rows && 2 * board->cols <= cols && "Board is to big!");
+	assert(board->rows <= rows && 2 * board->cols <= cols && "init_snake failed, board is to big!");
 	if (board->rows > rows || 2 * board->cols > cols)
 		exit(1);
 	snake->tail->row = board->rows / 2;
@@ -37,13 +37,15 @@ void init_snake(Snake_t *snake, Board_t *board) {
 }
 
 void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomic_bool *game_over) {
-	assert(snake->tail);
-	
+	assert(snake && "move_snake failed, Snake_t* is NULL!");
+	assert(board && "move_snake failed, Board_t* is NULL!");
+	assert(game_over && "move_snake failed, atomic_bool* is NULL!");
+	assert(snake->tail && "move_snake failed, Snake_segment_t* is NULL!");
+	if (!snake || !board || !game_over || !snake->tail)
+		exit(1);
+
 	snake->direction = new_direction;
-
 	set_table_drawing_on();
-	set_color(10, 233, 20);
-
 	if (!snake->growing) {
 		board->board[board->cols * snake->tail->row + snake->tail->col] = EMPTY;
 		char c = cell_state_to_char(EMPTY);
@@ -57,6 +59,7 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 	else {
 		snake->growing = false;
 		Snake_segment_t *new_tail = (Snake_segment_t*)malloc(sizeof(*new_tail));
+		assert(new_tail && "move_snake failed, Snake_segment_t* is NULL!");
 		if (!new_tail)
 			exit(1);
 
@@ -171,6 +174,8 @@ void move_snake(Snake_t *snake, Direction_t new_direction, Board_t *board, atomi
 }
 
 void free_snake(Snake_t *snake) {
+	assert(snake && "free_snake called unnecessarily Snake_t* is NULL!");
+	if (!snake) return;
 	Snake_segment_t *it = snake->tail;
 	while (it) {
 	Snake_segment_t *to_free = it;

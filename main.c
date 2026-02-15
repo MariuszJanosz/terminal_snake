@@ -4,6 +4,7 @@
 #include <time.h>
 #include <threads.h>
 #include <stdatomic.h>
+#include <assert.h>
 
 #include "board.h"
 #include "snake.h"
@@ -30,10 +31,19 @@ int main(int argc, char **argv) {
 	fflush(stdout);
 	atomic_bool game_over = false;
 	mtx_t mtx;
-	mtx_init(&mtx, mtx_plain);
-	mtx_lock(&mtx);
+	if (mtx_init(&mtx, mtx_plain) == thrd_error) {
+		assert(false && "mtx_init falied!");
+		exit(1);
+	}
+	if (mtx_lock(&mtx) == thrd_error) {
+		assert(false && "mtx_lock failed!");
+		exit(1);
+	}
 	cnd_t cnd;
-	cnd_init(&cnd);
+	if (cnd_init(&cnd) != thrd_success) {
+		assert(false && "cnd_init failed!");
+		exit(1);
+	}
 	thrd_t thr;
 	Control_context_t control_context;
 	control_context.snake = &snake;
@@ -41,27 +51,48 @@ int main(int argc, char **argv) {
 	control_context.mtx = &mtx;
 	control_context.cnd = &cnd;
 	struct timespec wake_time;
-	timespec_get(&wake_time, TIME_UTC);
+	if (timespec_get(&wake_time, TIME_UTC) == 0) {
+		assert(false && "timespec_get failed!");
+		exit(1);
+	}
 	wake_time.tv_nsec += difficulty;
 	if (wake_time.tv_nsec >= 1000000000) {
 		wake_time.tv_nsec -= 1000000000;
 		wake_time.tv_sec += 1;
 	}
-	cnd_timedwait(&cnd, &mtx, &wake_time);
-	thrd_create(&thr, control, &control_context);
+	if (cnd_timedwait(&cnd, &mtx, &wake_time) == thrd_error) {
+		assert(false && "cnd_timedwait failed!");
+		exit(1);
+	}
+	if (thrd_create(&thr, control, &control_context) != thrd_success) {
+		assert(false && "thrd_create failed!");
+		exit(1);
+	}
 	while (!atomic_load(&game_over)) {
 		move_snake(&snake, new_direction, &board, &game_over);
 		fflush(stdout);
-		timespec_get(&wake_time, TIME_UTC);
+		if (timespec_get(&wake_time, TIME_UTC) == 0) {
+			assert(false && "timespec_get failed!");
+			exit(1);
+		}
 		wake_time.tv_nsec += difficulty;
 		if (wake_time.tv_nsec >= 1000000000) {
 			wake_time.tv_nsec -= 1000000000;
 			wake_time.tv_sec += 1;
 		}
-		cnd_timedwait(&cnd, &mtx, &wake_time);
+		if (cnd_timedwait(&cnd, &mtx, &wake_time) == thrd_error) {
+			assert(false && "cnd_timedwait failed!");
+			exit(1);
+		}
 	}
-	thrd_join(thr, NULL);
-	mtx_unlock(&mtx);
+	if (thrd_join(thr, NULL) == thrd_error) {
+		assert(false && "thrd_join failed!");
+		exit(1);
+	}
+	if (mtx_unlock(&mtx) == thrd_error) {
+		assert(false && "mtx_unlock failed!");
+		exit(1);
+	}
 	mtx_destroy(&mtx);
 	cnd_destroy(&cnd);
 	free_board(&board);

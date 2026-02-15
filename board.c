@@ -8,6 +8,10 @@
 #include "print_utils.h"
 
 void init_board(Board_t *board, uint16_t rows, uint16_t cols) {
+	assert(board && "init_board failed, Board_t* is NULL!");
+	if (!board) {
+		exit(1);
+	}
 	board->rows = rows;
 	board->cols = cols;
 	board->board = (uint8_t*)malloc(rows * cols * sizeof(uint8_t));
@@ -48,7 +52,7 @@ char cell_state_to_char(Cell_state_t state) {
 		case SNAKE_HEAD_LEFT:
 			return '<';
 		default:
-			assert(false);
+			assert(false && "Unknown cell state!");
 			return '\0';
 	}
 }
@@ -82,6 +86,9 @@ void cell_state_to_rgb(Cell_state_t state, uint8_t *r, uint8_t *g, uint8_t *b) {
 }
 
 void draw_board(Board_t *board) {
+	assert(board && "draw_board failed, Board_t* in NULL!");
+	if (!board)
+		exit(1);
 	clear_screen();
 	set_table_drawing_on();
 	for (int i = 0; i < board->rows; ++i) {
@@ -102,5 +109,8 @@ void draw_board(Board_t *board) {
 }
 
 void free_board(Board_t *board) {
+	assert(board && "free_board called unnecessairly, Board_t* is NULL!");
+	if (!board)
+		return;
 	free(board->board);
 }
